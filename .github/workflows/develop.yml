@@ -1,0 +1,147 @@
+# Nombre del workflow que aparecerá en la pestaña "Actions" de GitHub
+name: RutaMove Flutter CI/CD
+
+# Eventos que disparan la ejecución del workflow
+on:
+
+  # Ejecuta el workflow cuando alguien hace push
+  push:
+
+    # Solo si el push ocurre en estas ramas
+    branches: [ main, develop ]
+
+  # Ejecuta el workflow cuando se abre o actualiza un Pull Request
+  pull_request:
+
+    # Solo si el Pull Request apunta a la rama main
+    branches: [ main ]
+
+
+# Definición de los trabajos (jobs) que ejecutará el workflow
+jobs:
+
+
+  # Primer job: pruebas y análisis del código
+  test:
+
+    # Nombre descriptivo del job que aparece en GitHub
+    name: Test and Analyze
+
+    # Sistema operativo de la máquina virtual que usará GitHub
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # permisos de escritura para este repositorio.
+      contents: write
+
+
+    # Lista de pasos que ejecutará este job
+    steps:
+
+      # Paso 1: descargar el repositorio dentro de la máquina virtual
+      - name: Checkout repository
+
+        # Action oficial que clona el repositorio en el runner
+        uses: actions/checkout@v4
+
+
+      # Paso 2: instalar Flutter en la máquina virtual
+      - name: Setup Flutter
+
+        # Action que instala y configura Flutter automáticamente
+        uses: subosito/flutter-action@v2
+
+        # Parámetros que recibe la action
+        with:
+
+          # Versión específica de Flutter que se instalará
+          flutter-version: '3.35.4'
+
+
+      # Paso 3: instalar dependencias del proyecto
+      - name: Install dependencies
+
+        # Ejecuta el comando para descargar los paquetes definidos en pubspec.yaml
+        run: flutter pub get
+
+
+      # Paso 4: analizar el código Dart
+      - name: Analyze code
+
+        # Ejecuta el analyzer de Flutter para detectar errores o malas prácticas
+        run: flutter analyze
+
+
+      # Paso 5: ejecutar las pruebas unitarias
+      - name: Run tests
+
+        # Ejecuta todos los tests ubicados en la carpeta test/
+        run: flutter test
+
+
+
+  # Segundo job: construir el APK
+  build:
+
+    # Nombre del job que aparecerá en GitHub
+    name: Build APK
+
+    # Sistema operativo del runner
+    runs-on: ubuntu-latest
+
+    # Indica que este job solo se ejecutará si el job "test" termina correctamente
+    needs: test
+
+
+    # Lista de pasos para construir la aplicación
+    steps:
+
+      # Paso 1: clonar nuevamente el repositorio
+      - name: Checkout repository
+
+        # Action que descarga el código en el runner
+        uses: actions/checkout@v4
+
+
+      # Paso 2: instalar Flutter
+      - name: Setup Flutter
+
+        # Action que instala Flutter
+        uses: subosito/flutter-action@v2
+
+        # Parámetros de configuración
+        with:
+
+          # Versión de Flutter a usar
+          flutter-version: '3.35.4'
+
+
+      # Paso 3: instalar dependencias
+      - name: Install dependencies
+
+        # Ejecuta flutter pub get para descargar paquetes
+        run: flutter pub get
+
+
+      # Paso 4: construir el APK en modo release
+      - name: Build APK
+
+        # Compila la aplicación Flutter generando el APK optimizado para producción
+        run: flutter build apk --release
+
+
+      # Paso 5: guardar el APK generado como artifact
+      - name: Upload APK artifact
+
+        # Action que permite subir archivos generados durante el workflow
+        uses: actions/upload-artifact@v4
+
+        # Configuración del artifact
+        with:
+
+          # Nombre del artifact que aparecerá en GitHub
+          name: app-release
+
+          # Ruta del archivo APK generado
+          path: build/app/outputs/flutter-apk/app-release.apk
