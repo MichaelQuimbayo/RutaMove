@@ -29,8 +29,15 @@ void main() {
   group('UserFormNotifier', () {
     test('saveUser debe fallar si el nombre es muy corto', () async {
       final container = createContainer();
-      // Mantenemos el provider vivo escuchándolo.
-      final listener = container.listen(userFormProviderInstance, (_, __) {});
+      final states = <UserFormState>[];
+      // Escuchamos y guardamos todos los cambios de estado en una lista.
+      container.listen<UserFormState>(
+        userFormProviderInstance,
+        (previous, next) {
+          states.add(next);
+        },
+        fireImmediately: true,
+      );
 
       final notifier = container.read(userFormProviderInstance.notifier);
 
@@ -46,16 +53,24 @@ void main() {
       final result = await notifier.saveUser();
 
       expect(result, isFalse);
-      // Ahora el estado que leemos es el correcto y actualizado.
-      final state = listener.read();
-      expect(state.errorMessage, isNotNull);
-      expect(state.errorMessage, contains('nombre'));
+      
+      // El último estado en la lista debe contener el mensaje de error.
+      final lastState = states.last;
+      expect(lastState.errorMessage, isNotNull);
+      expect(lastState.errorMessage, contains('nombre'));
     });
 
     test('saveUser debe llamar al repositorio si los datos son válidos', () async {
       final container = createContainer();
-      // Mantenemos el provider vivo escuchándolo.
-      final listener = container.listen(userFormProviderInstance, (_, __) {});
+      final states = <UserFormState>[];
+      // Escuchamos y guardamos todos los cambios de estado.
+      container.listen<UserFormState>(
+        userFormProviderInstance,
+        (previous, next) {
+          states.add(next);
+        },
+        fireImmediately: true,
+      );
 
       final notifier = container.read(userFormProviderInstance.notifier);
 
@@ -72,8 +87,10 @@ void main() {
 
       expect(result, isTrue);
       verify(() => mockUserRepository.saveUser(any())).called(1);
-      // Leemos el estado final a través del listener.
-      expect(listener.read().errorMessage, isNull);
+      
+      // El último estado no debe tener mensaje de error.
+      final lastState = states.last;
+      expect(lastState.errorMessage, isNull);
     });
   });
 }
