@@ -13,13 +13,13 @@ class Listener<T> extends Mock {
   void call(T? previous, T next);
 }
 class FakeUserEntity extends Fake implements UserEntity {}
-class FakeUserFormState extends Fake implements UserFormState {} // <-- AÑADIDO
+class FakeUserFormState extends Fake implements UserFormState {}
 
 void main() {
   // Configuración global para mocktail
   setUpAll(() {
     registerFallbackValue(FakeUserEntity());
-    registerFallbackValue(FakeUserFormState()); // <-- AÑADIDO
+    registerFallbackValue(FakeUserFormState());
   });
 
   late MockUserRepository mockUserRepository;
@@ -45,7 +45,7 @@ void main() {
       // Arrange
       final container = createContainer();
       final listener = Listener<UserFormState>();
-      container.listen(userFormProviderInstance, listener, fireImmediately: true);
+      container.listen(userFormProviderInstance, listener.call, fireImmediately: true);
       final notifier = container.read(userFormProviderInstance.notifier);
 
       final invalidUser = UserEntity(
@@ -62,7 +62,7 @@ void main() {
 
       // Assert
       expect(result, isFalse);
-      verify(() => listener(
+      verify(() => listener.call(
         any(that: isA<UserFormState>()),
         any(that: isA<UserFormState>()
             .having((s) => s.errorMessage, 'errorMessage', isNotNull)
@@ -75,7 +75,7 @@ void main() {
       // Arrange
       final container = createContainer();
       final listener = Listener<UserFormState>();
-      container.listen(userFormProviderInstance, listener, fireImmediately: true);
+      container.listen(userFormProviderInstance, listener.call, fireImmediately: true);
       final notifier = container.read(userFormProviderInstance.notifier);
 
       final validUser = UserEntity(
@@ -95,8 +95,8 @@ void main() {
       verify(() => mockUserRepository.saveUser(any())).called(1);
       
       verifyInOrder([
-        () => listener(any(), any(that: isA<UserFormState>().having((s) => s.isSaving, 'isSaving', isTrue))),
-        () => listener(any(), any(that: isA<UserFormState>()
+        () => listener.call(any(), any(that: isA<UserFormState>().having((s) => s.isSaving, 'isSaving', isTrue))),
+        () => listener.call(any(), any(that: isA<UserFormState>()
             .having((s) => s.isSaving, 'isSaving', isFalse)
             .having((s) => s.errorMessage, 'errorMessage', isNull)
         )),
