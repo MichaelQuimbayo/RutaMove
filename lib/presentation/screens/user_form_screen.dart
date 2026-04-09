@@ -104,10 +104,10 @@ class UserFormScreen extends ConsumerWidget {
                 },
                 borderRadius: BorderRadius.circular(16.0),
                 child: InputDecorator(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Fecha de Nacimiento',
                     floatingLabelBehavior: FloatingLabelBehavior.always,
-                    prefixIcon: const Icon(Icons.calendar_today_outlined),
+                    prefixIcon: Icon(Icons.calendar_today_outlined),
                   ),
                   child: Text(
                     DateFormat.yMMMd().format(formState.user.birthDate),

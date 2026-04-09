@@ -161,7 +161,9 @@ class _UserDetailView extends StatelessWidget {
               final repo = ref.read(userRepositoryProvider);
               await repo.deleteUser(userId);
               ref.invalidate(userListProvider);
+              if (!ctx.mounted) return;
               Navigator.of(ctx).pop();
+              if (!context.mounted) return;
               Navigator.of(context).pop();
             },
             child: const Text('Eliminar'),
