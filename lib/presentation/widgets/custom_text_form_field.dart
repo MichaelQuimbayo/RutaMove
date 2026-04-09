@@ -39,7 +39,7 @@ class CustomTextFormField extends StatelessWidget {
             color: colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w500,
           ),
-          hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withOpacity(0.5)),
+          hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withValues(alpha:0.5)),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           prefixIcon: icon != null ? Icon(icon, color: colorScheme.primary) : null,
           contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),

@@ -187,10 +187,10 @@ class _InfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.5)),
+        border: Border.all(color: colorScheme.outlineVariant.withValues(alpha:0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha:0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -234,7 +234,7 @@ class _InfoTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: colorScheme.primary.withOpacity(0.1),
+              color: colorScheme.primary.withValues(alpha:0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 20, color: colorScheme.primary),
@@ -263,7 +263,7 @@ class _AddressTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.2))),
+        border: Border(top: BorderSide(color: colorScheme.outlineVariant.withValues(alpha:0.2))),
       ),
       child: Row(
         children: [
@@ -320,7 +320,7 @@ class _ActionButton extends StatelessWidget {
       label: Text(label, style: TextStyle(color: color ?? colorScheme.primary)),
       style: OutlinedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        side: BorderSide(color: color?.withOpacity(0.5) ?? colorScheme.outlineVariant),
+        side: BorderSide(color: color?.withValues(alpha:0.5) ?? colorScheme.outlineVariant),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       ),
     );
