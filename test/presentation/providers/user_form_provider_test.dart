@@ -7,9 +7,21 @@ import 'package:flutter_user/domain/entities/user_entity.dart';
 import 'package:flutter_user/presentation/providers/user_form_provider.dart';
 import 'package:flutter_user/presentation/providers/user_providers.dart';
 
+// Mocks y Fakes
 class MockUserRepository extends Mock implements UserRepository {}
+class Listener<T> extends Mock {
+  void call(T? previous, T next);
+}
+class FakeUserEntity extends Fake implements UserEntity {}
+class FakeUserFormState extends Fake implements UserFormState {} // <-- AÑADIDO
 
 void main() {
+  // Configuración global para mocktail
+  setUpAll(() {
+    registerFallbackValue(FakeUserEntity());
+    registerFallbackValue(FakeUserFormState()); // <-- AÑADIDO
+  });
+
   late MockUserRepository mockUserRepository;
   final userFormProviderInstance = userFormProvider(null);
 
@@ -19,26 +31,21 @@ void main() {
   });
 
   ProviderContainer createContainer() {
-    return ProviderContainer(
+    final container = ProviderContainer(
       overrides: [
         userRepositoryProvider.overrideWithValue(mockUserRepository),
       ],
     );
+    addTearDown(container.dispose);
+    return container;
   }
 
   group('UserFormNotifier', () {
     test('saveUser debe fallar si el nombre es muy corto', () async {
+      // Arrange
       final container = createContainer();
-      final states = <UserFormState>[];
-      // Escuchamos y guardamos todos los cambios de estado en una lista.
-      container.listen<UserFormState>(
-        userFormProviderInstance,
-        (previous, next) {
-          states.add(next);
-        },
-        fireImmediately: true,
-      );
-
+      final listener = Listener<UserFormState>();
+      container.listen(userFormProviderInstance, listener, fireImmediately: true);
       final notifier = container.read(userFormProviderInstance.notifier);
 
       final invalidUser = UserEntity(
@@ -50,28 +57,25 @@ void main() {
       );
       notifier.updateField(invalidUser);
 
+      // Act
       final result = await notifier.saveUser();
 
+      // Assert
       expect(result, isFalse);
-      
-      // El último estado en la lista debe contener el mensaje de error.
-      final lastState = states.last;
-      expect(lastState.errorMessage, isNotNull);
-      expect(lastState.errorMessage, contains('nombre'));
+      verify(() => listener(
+        any(that: isA<UserFormState>()),
+        any(that: isA<UserFormState>()
+            .having((s) => s.errorMessage, 'errorMessage', isNotNull)
+            .having((s) => s.errorMessage, 'errorMessage content', contains('nombre'))
+        ),
+      )).called(1);
     });
 
     test('saveUser debe llamar al repositorio si los datos son válidos', () async {
+      // Arrange
       final container = createContainer();
-      final states = <UserFormState>[];
-      // Escuchamos y guardamos todos los cambios de estado.
-      container.listen<UserFormState>(
-        userFormProviderInstance,
-        (previous, next) {
-          states.add(next);
-        },
-        fireImmediately: true,
-      );
-
+      final listener = Listener<UserFormState>();
+      container.listen(userFormProviderInstance, listener, fireImmediately: true);
       final notifier = container.read(userFormProviderInstance.notifier);
 
       final validUser = UserEntity(
@@ -83,14 +87,20 @@ void main() {
       );
       notifier.updateField(validUser);
 
+      // Act
       final result = await notifier.saveUser();
 
+      // Assert
       expect(result, isTrue);
       verify(() => mockUserRepository.saveUser(any())).called(1);
       
-      // El último estado no debe tener mensaje de error.
-      final lastState = states.last;
-      expect(lastState.errorMessage, isNull);
+      verifyInOrder([
+        () => listener(any(), any(that: isA<UserFormState>().having((s) => s.isSaving, 'isSaving', isTrue))),
+        () => listener(any(), any(that: isA<UserFormState>()
+            .having((s) => s.isSaving, 'isSaving', isFalse)
+            .having((s) => s.errorMessage, 'errorMessage', isNull)
+        )),
+      ]);
     });
   });
 }
