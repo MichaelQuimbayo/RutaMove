@@ -11,10 +11,10 @@ class MockUserRepository extends Mock implements UserRepository {}
 
 void main() {
   late MockUserRepository mockUserRepository;
+  final userFormProviderInstance = userFormProvider(null);
 
   setUp(() {
     mockUserRepository = MockUserRepository();
-    // Configuración para que el mock siempre devuelva éxito por defecto
     when(() => mockUserRepository.saveUser(any())).thenAnswer((_) async => const Right(1));
   });
 
@@ -29,11 +29,13 @@ void main() {
   group('UserFormNotifier', () {
     test('saveUser debe fallar si el nombre es muy corto', () async {
       final container = createContainer();
-      final notifier = container.read(userFormProvider(null).notifier);
+      // Mantenemos el provider vivo escuchándolo.
+      final listener = container.listen(userFormProviderInstance, (_, __) {});
 
-      // Actualizar el estado con un nombre inválido
+      final notifier = container.read(userFormProviderInstance.notifier);
+
       final invalidUser = UserEntity(
-        firstName: 'J', // inválido
+        firstName: 'J',
         lastName: 'Doe',
         birthDate: DateTime(1990, 1, 1),
         email: 'john.doe@example.com',
@@ -44,13 +46,18 @@ void main() {
       final result = await notifier.saveUser();
 
       expect(result, isFalse);
-      expect(container.read(userFormProvider(null)).errorMessage, isNotNull);
-      expect(container.read(userFormProvider(null)).errorMessage, contains('nombre'));
+      // Ahora el estado que leemos es el correcto y actualizado.
+      final state = listener.read();
+      expect(state.errorMessage, isNotNull);
+      expect(state.errorMessage, contains('nombre'));
     });
 
     test('saveUser debe llamar al repositorio si los datos son válidos', () async {
       final container = createContainer();
-      final notifier = container.read(userFormProvider(null).notifier);
+      // Mantenemos el provider vivo escuchándolo.
+      final listener = container.listen(userFormProviderInstance, (_, __) {});
+
+      final notifier = container.read(userFormProviderInstance.notifier);
 
       final validUser = UserEntity(
         firstName: 'John',
@@ -65,7 +72,8 @@ void main() {
 
       expect(result, isTrue);
       verify(() => mockUserRepository.saveUser(any())).called(1);
-      expect(container.read(userFormProvider(null)).errorMessage, isNull);
+      // Leemos el estado final a través del listener.
+      expect(listener.read().errorMessage, isNull);
     });
   });
 }
