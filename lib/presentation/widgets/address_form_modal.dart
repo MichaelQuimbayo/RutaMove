@@ -79,7 +79,7 @@ class _AddressFormModalState extends State<AddressFormModal> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<AddressLabel>(
-                value: label,
+                initialValue: label,
                 decoration: const InputDecoration(
                   labelText: 'Etiqueta',
                   border: OutlineInputBorder(),
