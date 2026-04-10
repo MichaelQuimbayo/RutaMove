@@ -103,7 +103,13 @@ jobs:
         # Action que descarga el código en el runner
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
+        
       # Paso 2: instalar Flutter
       - name: Setup Flutter
 
