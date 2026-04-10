@@ -129,20 +129,20 @@ jobs:
 
       - name: Clean project
         run: flutter clean
-          
 
+      - name: Disable Flutter file watcher
+        run: |
+          echo "FLUTTER_SUPPRESS_ANALYTICS=true" >> $GITHUB_ENV
 
-      # Paso 3: instalar dependencias
       - name: Install dependencies
-
-        # Ejecuta flutter pub get para descargar paquetes
         run: flutter pub get
 
+      - name: Clean Android build
+        run: |
+          cd android
+          ./gradlew clean
 
-      # Paso 4: construir el APK en modo release
       - name: Build APK
-
-        # Compila la aplicación Flutter generando el APK optimizado para producción
         run: flutter build apk --flavor dev --release
 
 
