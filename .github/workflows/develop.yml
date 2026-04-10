@@ -57,7 +57,7 @@ jobs:
 
           # Versión específica de Flutter que se instalará
           flutter-version: '3.35.4'
-
+          
 
       # Paso 3: instalar dependencias del proyecto
       - name: Install dependencies
@@ -121,6 +121,15 @@ jobs:
 
           # Versión de Flutter a usar
           flutter-version: '3.35.4'
+          cache: true
+
+          
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      - name: Clean project
+        run: flutter clean
+          
 
 
       # Paso 3: instalar dependencias
