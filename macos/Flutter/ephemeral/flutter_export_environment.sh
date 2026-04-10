@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=P:\ToolxCloud\flutter-tlx-pos\.fvm\flutter_sdk"
+export "FLUTTER_ROOT=P:\RutaMove\.fvm\flutter_sdk"
 export "FLUTTER_APPLICATION_PATH=P:\RutaMove"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
