@@ -143,7 +143,7 @@ jobs:
       - name: Build APK
 
         # Compila la aplicación Flutter generando el APK optimizado para producción
-        run: flutter build apk --release
+        run: flutter build apk --flavor dev --release
 
 
       # Paso 5: guardar el APK generado como artifact
@@ -159,4 +159,4 @@ jobs:
           name: app-release
 
           # Ruta del archivo APK generado
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-dev-release.apk
