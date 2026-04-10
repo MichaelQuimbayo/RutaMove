@@ -89,6 +89,7 @@ void main() {
 
       // Act
       final result = await notifier.saveUser();
+      
       // Assert
       expect(result, isTrue);
       verify(() => mockUserRepository.saveUser(any())).called(1);
