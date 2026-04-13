@@ -142,8 +142,14 @@ jobs:
           ./gradlew clean
 
 
+      - name: Install FVM
+        run: dart pub global activate fvm
+
+      - name: Use FVM Flutter
+        run: fvm install
+
       - name: Build APK
-        run: flutter build apk --flavor dev --release
+        run: fvm flutter build apk --flavor dev --release
 
 
       # Paso 5: guardar el APK generado como artifact
