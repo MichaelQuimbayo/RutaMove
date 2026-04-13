@@ -81,26 +81,14 @@ jobs:
 
 
 
-  # Segundo job: construir el APK
+    # Segundo job: construir el APK (versión corregida para FVM)
   build:
-
-    # Nombre del job que aparecerá en GitHub
-    name: Build APK
-
-    # Sistema operativo del runner
+    name: Build APK with FVM
     runs-on: ubuntu-latest
-
-    # Indica que este job solo se ejecutará si el job "test" termina correctamente
     needs: test
 
-
-    # Lista de pasos para construir la aplicación
     steps:
-
-      # Paso 1: clonar nuevamente el repositorio
       - name: Checkout repository
-
-        # Action que descarga el código en el runner
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -109,60 +97,30 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-        
-      # Paso 2: instalar Flutter
-      - name: Setup Flutter
-
-        # Action que instala Flutter
-        uses: subosito/flutter-action@v2
-
-        # Parámetros de configuración
-        with:
-
-          # Versión de Flutter a usar
-          flutter-version: '3.35.4'
-          cache: true
-
-          
-      - name: Flutter doctor
-        run: flutter doctor -v
-
-      - name: Clean project
-        run: flutter clean
-
-      - name: Disable file watcher
-        run: echo "FLUTTER_USE_POLLING_FILE_WATCHER=true" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Clean Gradle
-        run: |
-          cd android
-          ./gradlew clean
-
-
+      # Instalar FVM primero
       - name: Install FVM
         run: dart pub global activate fvm
 
-      - name: Use FVM Flutter
+      # Dejar que FVM instale la versión de Flutter definida en tu proyecto
+      - name: Install Flutter via FVM
         run: fvm install
+
+      # Usar el polling file watcher para evitar errores en CI
+      - name: Disable file watcher
+        run: echo "FLUTTER_USE_POLLING_FILE_WATCHER=true" >> $GITHUB_ENV
+
+      # De aquí en adelante, todos los comandos usan "fvm flutter"
+      - name: Flutter doctor
+        run: fvm flutter doctor -v
+
+      - name: Install dependencies
+        run: fvm flutter pub get
 
       - name: Build APK
         run: fvm flutter build apk --flavor dev --release
 
-
-      # Paso 5: guardar el APK generado como artifact
       - name: Upload APK artifact
-
-        # Action que permite subir archivos generados durante el workflow
         uses: actions/upload-artifact@v4
-
-        # Configuración del artifact
         with:
-
-          # Nombre del artifact que aparecerá en GitHub
-          name: app-release
-
-          # Ruta del archivo APK generado
+          name: app-dev-release
           path: build/app/outputs/flutter-apk/app-dev-release.apk
