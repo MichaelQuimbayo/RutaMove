@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_user/presentation/screens/welcome_screen.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'data/models/address_model.dart';
@@ -37,7 +38,7 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       home: isarAsyncValue.when(
-        data: (isar) => const UserListScreen(),
+        data: (isar) => const WelcomeScreen(),
         loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
         error: (err, stack) => Scaffold(body: Center(child: Text('Error al cargar Isar: $err'))),
       ),
