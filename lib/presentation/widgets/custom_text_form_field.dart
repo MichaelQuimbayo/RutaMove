@@ -24,13 +24,13 @@ class CustomTextFormField extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: TextFormField(
         initialValue: initialValue,
         readOnly: readOnly,
         keyboardType: keyboardType,
         // Eliminamos el color fijo para que use el color de texto del tema (blanco en dark, negro en light)
-        style: const TextStyle(fontSize: 16), 
+        style: const TextStyle(fontSize: 16),
         decoration: InputDecoration(
           labelText: label,
           hintText: 'Ingrese $label',
@@ -43,7 +43,7 @@ class CustomTextFormField extends StatelessWidget {
           //hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withValues(alpha:0.5)),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           prefixIcon: icon != null ? Icon(icon, color: colorScheme.primary) : null,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
           
           // Nota: Los bordes ya están definidos globalmente en AppTheme,
           enabledBorder: OutlineInputBorder(

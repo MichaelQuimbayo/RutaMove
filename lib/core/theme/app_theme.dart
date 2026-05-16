@@ -3,12 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 // --- 1. Definición de Colores Base ---
 const Color _primaryColor = Color(0xFF0047AB);
-const Color _secondaryColor = Color(0xFFFFFDDE); // Corregido ligeramente para no ser tan brillante
+const Color _secondaryColor = Color(0xFFFFFDD0);
 const Color _tertiaryColor = Color(0xFF8B2E01);
 
 // Colores de superficie para cada tema
-const Color _lightSurface = Color(0xFFFFFEF2);
-const Color _darkSurface = Color(0xFF1A1C1E); // Un gris oscuro azulado
+const Color _lightSurface = Color(0xFFFFFDD0);
+const Color _darkSurface = Color(0xFF1A1C1E);
 
 // --- 2. Creación de ColorScheme (Claro y Oscuro) ---
 

@@ -14,6 +14,7 @@ dependencies:
   # State Management
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
+  flutter_native_splash: ^2.4.5
 
   # Persistence
   isar: ^3.1.0+1
@@ -42,6 +43,21 @@ dev_dependencies:
   
   # Testing
   mocktail: ^1.0.3
+
+flutter_native_splash:
+  color: "#FFFDD0"
+  image: assets/logo_splash.png
+  android: true
+  ios: true
+  web: true
+
+  fullscreen: true
+
+  android_12:
+    image: assets/logo_splash.png
+    color: "#FFFDD0"
+    icon_background_color: "#FFFDD0"
+    android_gravity: fill
 
 flutter:
   uses-material-design: true

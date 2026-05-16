@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_user/features/auth/presentation/screens/login_screen.dart';
 import 'package:flutter_user/presentation/screens/welcome_screen.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,11 +25,28 @@ final isarProvider = FutureProvider<Isar>((ref) async {
   return Isar.getInstance()!;
 });
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+
+  @override
+  void initState() {
+    super.initState();
+    _removeSplash();
+  }
+
+  void _removeSplash() async {
+    await Future.delayed(const Duration(seconds: 1));
+    FlutterNativeSplash.remove();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isarAsyncValue = ref.watch(isarProvider);
     final themeMode = ref.watch(themeModeProvider);
 
@@ -38,9 +57,15 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       home: isarAsyncValue.when(
-        data: (isar) => const WelcomeScreen(),
-        loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-        error: (err, stack) => Scaffold(body: Center(child: Text('Error al cargar Isar: $err'))),
+        data: (isar) => const LoginScreen(),
+        loading: () => const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+        error: (err, stack) => Scaffold(
+          body: Center(
+            child: Text('Error al cargar Isar: $err'),
+          ),
+        ),
       ),
     );
   }
