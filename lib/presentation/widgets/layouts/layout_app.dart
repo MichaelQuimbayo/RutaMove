@@ -6,6 +6,7 @@ class LayoutApp extends StatelessWidget {
   final bool scrollable;
   final Widget? floatingActionButton;
   final Widget? bottomNavigationBar;
+  final bool isDrawer;
 
   const LayoutApp({
     super.key,
@@ -14,19 +15,31 @@ class LayoutApp extends StatelessWidget {
     this.scrollable = false,
     this.floatingActionButton,
     this.bottomNavigationBar,
+    required this.isDrawer,
   });
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     Widget content = scrollable
         ? SingleChildScrollView(child: body)
         : body;
 
     return Scaffold(
-      appBar: title != null ? AppBar(title: Text(title!)) : null,
+      appBar: title != null ? AppBar(title:
+      Text(title!,
+        style: textTheme.headlineLarge?.copyWith(
+          color: colorScheme.primary,
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+        ),
+      )) : null,
 
       // 👇 Drawer agregado
-      drawer: const _AppDrawer(),
+      drawer: isDrawer? _AppDrawer():null,
+
 
       body: SafeArea(
         child: Padding(

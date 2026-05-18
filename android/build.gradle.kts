@@ -16,12 +16,12 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(subproject.name)
     subproject.layout.buildDirectory.value(newSubprojectBuildDir)
     
-    // Forzado de SDK en todas las librerías
+    // Actualizado a 36 para permitir las nuevas versiones de androidx.activity
     subproject.afterEvaluate {
         if (subproject.hasProperty("android")) {
             val android = subproject.extensions.getByName("android") as? com.android.build.gradle.BaseExtension
             android?.apply {
-                compileSdkVersion(34)
+                compileSdkVersion(36)
                 if (namespace == null) {
                     namespace = "dev.isar.${subproject.name.replace("-", "_")}"
                 }

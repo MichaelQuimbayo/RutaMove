@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_user/features/auth/presentation/screens/register_passenger.dart';
 import 'package:flutter_user/features/auth/presentation/screens/role_selection_screen.dart';
 
 import '../../../../presentation/widgets/custom_text_form_field.dart';
@@ -160,6 +161,7 @@ class LoginScreen extends ConsumerWidget {
                           TextButton(
                             onPressed: () {
                               // TODO: Navegar a la pantalla de registro
+                              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterPassenger()));
                             },
                             child: const Text('Crear una cuenta'),
                           ),

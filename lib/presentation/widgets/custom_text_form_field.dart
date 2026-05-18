@@ -33,7 +33,7 @@ class CustomTextFormField extends StatelessWidget {
         style: const TextStyle(fontSize: 16),
         decoration: InputDecoration(
           labelText: label,
-          hintText: 'Ingrese $label',
+          hintText: ' $label',
           // Usamos colores del esquema del tema
           labelStyle: TextStyle(
             color: colorScheme.onSurfaceVariant,
