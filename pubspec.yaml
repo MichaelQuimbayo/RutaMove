@@ -1,4 +1,4 @@
-name: flutter_user
+name: RutaMove
 description: "A new Flutter project for User Management."
 publish_to: 'none'
 version: 1.0.0+1
@@ -20,6 +20,16 @@ dependencies:
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
   path_provider: ^2.1.3
+
+  # Firebase
+  firebase_core: ^3.10.1
+  firebase_auth: ^5.5.1
+  cloud_firestore: ^5.6.5
+  firebase_storage: ^12.4.5
+
+  # Networking & Storage
+  http: ^1.2.1
+  flutter_secure_storage: ^9.2.2
 
   # Utilities
   intl: ^0.19.0

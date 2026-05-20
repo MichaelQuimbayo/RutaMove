@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app.dart';
+import '../../data/repositories/isar_user_repository.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/user_repository.dart';
-import '../../data/repositories/isar_user_repository.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final isar = ref.watch(isarProvider).requireValue;
