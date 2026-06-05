@@ -18,6 +18,7 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
+  @override
   Future<UserEntity> signIn({
     required String email,
     required String password,

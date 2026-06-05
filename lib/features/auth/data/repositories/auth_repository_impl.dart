@@ -5,6 +5,7 @@ import '../services/firestore_user_service.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  // ignore: unused_field
   final FirestoreUserService _firestoreService;
 
   AuthRepositoryImpl(this._firestoreService);
@@ -15,7 +16,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      // Paso 1: Crear usuario en Firebase Auth
+      // Paso 1: Crear identidad en Firebase Auth
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -23,8 +24,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final uid = credential.user!.uid;
 
-      // Retornamos la entidad básica para que el controlador
-      // sepa que el "Paso 1" fue exitoso
+      // Retornamos la entidad básica para que el controlador sepa que el éxito
       return UserEntity(
         uid: uid,
         email: email,
@@ -35,28 +35,27 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
   Future<UserEntity> signIn({
     required String email,
     required String password,
   }) async {
     try {
-      // Paso 1: Crear usuario en Firebase Auth
+      // Iniciar sesión en Firebase Auth
       final credential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      
       final uid = credential.user!.uid;
-      // Retornamos la entidad básica para que el controlador
-      // sepa que el "Paso 1" fue exitoso
+      
       return UserEntity(
         uid: uid,
         email: email,
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? 'Error en el registro');
+      throw Exception(e.message ?? 'Error al iniciar sesión');
     }
   }
-
-  }
-
+}
