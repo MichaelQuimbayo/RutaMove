@@ -119,9 +119,8 @@ class _RoleButton extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final backgroundColor = isPrimary ? colorScheme.primary : colorScheme.surface;
     final foregroundColor = isPrimary ? colorScheme.onPrimary : colorScheme.primary;
-    final borderColor = isPrimary ? Colors.transparent : colorScheme.outline;
+    //final borderColor = isPrimary ? Colors.transparent : colorScheme.outline;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
@@ -131,7 +130,7 @@ class _RoleButton extends StatelessWidget {
           /// Imagen fondo
           Positioned.fill(
             child: FadeInImage(
-              placeholder: AssetImage('assets/jar-loading.gif'),
+              placeholder: const AssetImage('assets/jar-loading.gif'),
               image: AssetImage(imageTravel),
               fit: BoxFit.cover,
             ),
@@ -140,7 +139,7 @@ class _RoleButton extends StatelessWidget {
           /// Overlay oscuro
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withAlpha(4),
             ),
           ),
 
