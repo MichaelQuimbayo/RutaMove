@@ -4,11 +4,13 @@ import '../../domain/repositories/auth_repository.dart';
 import '../services/firestore_user_service.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth;
   // ignore: unused_field
   final FirestoreUserService _firestoreService;
 
-  AuthRepositoryImpl(this._firestoreService);
+  // Inyectamos FirebaseAuth para poder mockearlo en los tests
+  AuthRepositoryImpl(this._firestoreService, {FirebaseAuth? firebaseAuth}) 
+    : _auth = firebaseAuth ?? FirebaseAuth.instance;
 
   @override
   Future<UserEntity> signUp({
@@ -16,7 +18,6 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      // Paso 1: Crear identidad en Firebase Auth
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -24,7 +25,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final uid = credential.user!.uid;
 
-      // Retornamos la entidad básica para que el controlador sepa que el éxito
       return UserEntity(
         uid: uid,
         email: email,
@@ -41,7 +41,6 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      // Iniciar sesión en Firebase Auth
       final credential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
