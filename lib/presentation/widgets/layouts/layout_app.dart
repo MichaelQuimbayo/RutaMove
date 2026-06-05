@@ -38,7 +38,7 @@ class LayoutApp extends StatelessWidget {
       )) : null,
 
       // 👇 Drawer agregado
-      drawer: isDrawer? _AppDrawer():null,
+      drawer: isDrawer? const _AppDrawer():null,
 
 
       body: SafeArea(
