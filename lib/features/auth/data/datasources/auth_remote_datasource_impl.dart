@@ -3,7 +3,6 @@ import 'package:RutaMove/features/auth/domain/entities/authenticated_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../models/auth_user_model.dart';
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   final FirebaseAuth firebaseAuth;

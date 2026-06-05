@@ -9,11 +9,11 @@ enum ReservationStatus { reserved, confirmed, cancelled }
 class ReservationEntity with _$ReservationEntity {
   const factory ReservationEntity({
     required String id,
-    @JsonKey(name: 'trip_id') required String tripId,
-    @JsonKey(name: 'passenger_id') required String passengerId,
-    @JsonKey(name: 'seats_reserved') required int seatsReserved,
+    required String tripId,
+    required String passengerId,
+    required int seatsReserved,
     required ReservationStatus status,
-    @JsonKey(name: 'created_at') required DateTime createdAt,
+    required DateTime createdAt,
   }) = _ReservationEntity;
 
   factory ReservationEntity.fromJson(Map<String, dynamic> json) => _$ReservationEntityFromJson(json);

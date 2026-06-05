@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const Color _primaryColor = Color(0xFF0047AB);
-const Color _secondaryColor = Color(0xFFFFFDD0);
+//const Color _secondaryColor = Color(0xFFFFFDD0);
 
 final ColorScheme _lightColorScheme = ColorScheme.fromSeed(
   seedColor: _primaryColor,

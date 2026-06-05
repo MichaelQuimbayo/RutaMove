@@ -15,8 +15,8 @@ void main() {
     useCase = SignInUseCase(mockAuthRepository);
   });
 
-  final tEmail = 'test@example.com';
-  final tPassword = 'password123';
+  const tEmail = 'test@example.com';
+  const tPassword = 'password123';
   final tUser = UserEntity(uid: '123', email: tEmail, password: tPassword);
 
   test('debe llamar al repository para iniciar sesión con éxito', () async {

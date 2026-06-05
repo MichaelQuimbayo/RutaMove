@@ -11,10 +11,10 @@ class UserEntity with _$UserEntity {
     required String name,
     required String email,
     required String phone,
-    @JsonKey(name: 'active_role') required String activeRole,
+    required String activeRole,
     required Map<String, bool> roles,
-    @JsonKey(name: 'driver_profile') DriverProfileEntity? driverProfile,
-    @JsonKey(name: 'created_at') required DateTime createdAt,
+    DriverProfileEntity? driverProfile,
+    required DateTime createdAt,
   }) = _UserEntity;
 
   const UserEntity._();

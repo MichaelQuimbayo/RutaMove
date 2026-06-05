@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../shared/widgets/custom_text_form_field.dart';
 import '../../../../shared/widgets/layout_app.dart';
-import '../providers/auth_provider.dart';
 
 class RegisterPassenger extends ConsumerStatefulWidget {
   const RegisterPassenger({super.key});
