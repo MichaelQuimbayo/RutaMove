@@ -1,12 +1,12 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class UserEntity {
+  final String uid;
+  final String email;
+  final String password;
 
-part 'authenticated_user.freezed.dart';
+  UserEntity({
+    required this.uid,
+    required this.email,
+    required this.password,
 
-@freezed
-class AuthenticatedUser with _$AuthenticatedUser {
-  const factory AuthenticatedUser({
-    required String id,
-    required String email,
-    String? token,
-  }) = _AuthenticatedUser;
+  });
 }

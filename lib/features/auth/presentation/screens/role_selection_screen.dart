@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_user/features/auth/presentation/screens/index.dart';
+import 'package:RutaMove/features/auth/presentation/screens/index.dart';
 
 // TODO: Reemplazar con las rutas correctas a tus futuras pantallas de autenticación
 // import 'package:rutamove/features/auth/presentation/screens/login_screen.dart'; 

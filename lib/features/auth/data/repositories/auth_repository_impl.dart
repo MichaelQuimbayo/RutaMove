@@ -1,43 +1,62 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/entities/authenticated_user.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../models/auth_user_model.dart';
-import '../services/firebase_auth_service.dart';
+import '../services/firestore_user_service.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final FirebaseAuthService _service;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirestoreUserService _firestoreService;
 
-  AuthRepositoryImpl(this._service);
+  AuthRepositoryImpl(this._firestoreService);
 
   @override
-  Future<AuthenticatedUser?> login(String email, String password) async {
-    final data = await _service.signIn(email, password);
-    if (data != null && data.containsKey('idToken')) {
-      return AuthenticatedUser(
-        id: data['localId'],
-        email: data['email'],
-        token: data['idToken'],
+  Future<UserEntity> signUp({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      // Paso 1: Crear usuario en Firebase Auth
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
       );
+
+      final uid = credential.user!.uid;
+
+      // Retornamos la entidad básica para que el controlador
+      // sepa que el "Paso 1" fue exitoso
+      return UserEntity(
+        uid: uid,
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message ?? 'Error en el registro');
     }
-    return null;
   }
 
-  @override
-  Future<String?> getToken() {
-    // TODO: implement getToken
-    throw UnimplementedError();
+  Future<UserEntity> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      // Paso 1: Crear usuario en Firebase Auth
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final uid = credential.user!.uid;
+      // Retornamos la entidad básica para que el controlador
+      // sepa que el "Paso 1" fue exitoso
+      return UserEntity(
+        uid: uid,
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message ?? 'Error en el registro');
+    }
   }
 
-  @override
-  Future<void> logout() {
-    // TODO: implement logout
-    throw UnimplementedError();
   }
 
-  @override
-  Future<AuthenticatedUser?> register(String email, String password) {
-    // TODO: implement register
-    throw UnimplementedError();
-  }
-
-// Implementar register, logout, etc.
-}

@@ -1,29 +1,30 @@
 import '../../domain/entities/authenticated_user.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../datasources/auth_remote_datasource.dart';
 
-class AuthUserModel {
-  final String localId;
-  final String email;
-  final String? idToken;
+class AuthRepositoryImpl implements AuthRepository {
+  final AuthRemoteDatasource datasource;
 
-  AuthUserModel({
-    required this.localId,
-    required this.email,
-    this.idToken,
-  });
+  AuthRepositoryImpl(this.datasource);
 
-  factory AuthUserModel.fromJson(Map<String, dynamic> json) {
-    return AuthUserModel(
-      localId: json['localId'] ?? '',
-      email: json['email'] ?? '',
-      idToken: json['idToken'],
+  @override
+  Future<UserEntity> signUp({
+    required String email,
+    required String password,
+  }) {
+    return datasource.signUp(
+      email: email,
+      password: password,
     );
   }
 
-  AuthenticatedUser toEntity() {
-    return AuthenticatedUser(
-      id: localId,
+  Future<UserEntity> signIn({
+    required String email,
+    required String password,
+  }) {
+    return datasource.signIn(
       email: email,
-      token: idToken,
+      password: password,
     );
   }
 }

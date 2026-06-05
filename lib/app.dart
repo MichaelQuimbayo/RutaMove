@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_user/features/auth/presentation/screens/login_screen.dart';
-import 'package:flutter_user/presentation/screens/welcome_screen.dart';
+
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'data/models/address_model.dart';
-import 'data/models/user_model.dart';
 import 'core/theme/app_theme.dart';
-import 'presentation/screens/user_list_screen.dart';
+import 'features/auth/presentation/screens/login_screen.dart';
+import 'features/profile/data/models/user_model.dart';
 import 'presentation/providers/theme_provider.dart';
 
 // Provider for Isar instance
@@ -17,7 +15,7 @@ final isarProvider = FutureProvider<Isar>((ref) async {
   
   if (Isar.instanceNames.isEmpty) {
     return await Isar.open(
-      [UserModelSchema, AddressModelSchema],
+      [UserModelSchema],
       directory: dir.path,
       inspector: true,
     );

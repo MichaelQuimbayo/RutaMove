@@ -1,1 +1,1 @@
-export 'package:flutter_user/presentation/screens/welcome_screen.dart';
+export 'package:RutaMove/presentation/screens/welcome_screen.dart';

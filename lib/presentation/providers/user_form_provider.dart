@@ -1,6 +1,7 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/user_entity.dart';
+/*import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/address_entity.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../features/profile/domain/entities/user.dart';
 import 'user_providers.dart';
 
 class UserFormState {
@@ -133,3 +134,4 @@ class UserFormNotifier extends StateNotifier<UserFormState> {
 final userFormProvider = StateNotifierProvider.autoDispose.family<UserFormNotifier, UserFormState, UserEntity?>((ref, user) {
   return UserFormNotifier(ref, user);
 });
+*/

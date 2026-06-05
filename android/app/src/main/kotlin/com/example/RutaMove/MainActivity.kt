@@ -1,4 +1,4 @@
-package com.example.RutaMove
+package com.RutaMove
 
 import io.flutter.embedding.android.FlutterActivity
 

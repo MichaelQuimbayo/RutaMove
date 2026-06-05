@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_user/features/auth/presentation/screens/index.dart';
-import 'package:flutter_user/features/auth/presentation/screens/login_screen.dart';
+import 'package:RutaMove/features/auth/presentation/screens/index.dart';
+import 'package:RutaMove/features/auth/presentation/screens/login_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

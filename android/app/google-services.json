@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "968247810330",
+    "project_id": "rutamove",
+    "storage_bucket": "rutamove.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968247810330:android:c7b2defed7a8899f28f4a3",
+        "android_client_info": {
+          "package_name": "com.RutaMove"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "968247810330-ll22hu1adn7r2a7f94kt8cs5hgrjcj4k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCi7u_OLrGizNF8id1FVkGgIz-oQhtBUIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "968247810330-ll22hu1adn7r2a7f94kt8cs5hgrjcj4k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "968247810330-1lfihfvin4os3p2lru94r9u7mjfm06si.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.RutaMove"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,47 +1,57 @@
 import 'package:isar/isar.dart';
-import '../../domain/entities/user_entity.dart';
-import 'address_model.dart';
+import '../../domain/entities/user.dart';
+import 'driver_profile_model.dart';
 
 part 'user_model.g.dart';
 
 @collection
 class UserModel {
-  Id id = Isar.autoIncrement;
+  Id? isarId; 
 
-  late String firstName;
-  late String lastName;
-  late DateTime birthDate;
+  @Index(unique: true, replace: true)
+  late String id; // UID de Firebase
+
+  late String name;
   late String email;
   late String phone;
+  late String activeRole;
+  
+  late bool isPassengerRole;
+  late bool isDriverRole;
 
-  final addresses = IsarLinks<AddressModel>();
+  DriverProfileModel? driverProfile;
+  late DateTime createdAt;
 
-  // Convert from Entity to Model
+
   static UserModel fromEntity(UserEntity entity) {
-    final model = UserModel()
-      ..firstName = entity.firstName
-      ..lastName = entity.lastName
-      ..birthDate = entity.birthDate
+    return UserModel()
+      ..id = entity.id
+      ..name = entity.name
       ..email = entity.email
-      ..phone = entity.phone;
-    
-    if (entity.id != null) {
-      model.id = entity.id!;
-    }
-    
-    return model;
+      ..phone = entity.phone
+      ..activeRole = entity.activeRole
+      ..isPassengerRole = entity.roles['passenger'] ?? false
+      ..isDriverRole = entity.roles['driver'] ?? false
+      ..driverProfile = entity.driverProfile != null 
+          ? DriverProfileModel.fromEntity(entity.driverProfile!) 
+          : null
+      ..createdAt = entity.createdAt;
   }
 
-  // Convert from Model to Entity
   UserEntity toEntity() {
     return UserEntity(
       id: id,
-      firstName: firstName,
-      lastName: lastName,
-      birthDate: birthDate,
+      name: name,
       email: email,
       phone: phone,
-      addresses: addresses.map((a) => a.toEntity()).toList(),
+      activeRole: activeRole,
+      roles: {
+        'passenger': isPassengerRole,
+        'driver': isDriverRole,
+      },
+      driverProfile: driverProfile?.toEntity(),
+      createdAt: createdAt,
+      // Cargamos las direcciones desde los links de Isar
     );
   }
 }

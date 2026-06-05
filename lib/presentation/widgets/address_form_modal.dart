@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../../domain/entities/address_entity.dart';
 import 'custom_text_form_field.dart';
 
 class AddressFormModal extends StatefulWidget {
-  final Function(AddressEntity) onSave;
 
   const AddressFormModal({super.key, required this.onSave});
 
@@ -20,7 +19,6 @@ class _AddressFormModalState extends State<AddressFormModal> {
   String city = '';
   String state = '';
   String zipCode = '';
-  AddressLabel label = AddressLabel.casa;
   bool isPrimary = false;
 
   @override
@@ -132,3 +130,4 @@ class _AddressFormModalState extends State<AddressFormModal> {
     );
   }
 }
+*/

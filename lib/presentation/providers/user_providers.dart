@@ -1,12 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app.dart';
-import '../../data/repositories/isar_user_repository.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/user_repository.dart';
+import '../../features/profile/domain/entities/user.dart';
+import '../../features/profile/domain/repositories/user_repository.dart';
+import '../../features/profile/data/repositories/isar_user_repository_impl.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  return IsarUserRepository(isar);
+  // Corregido: Nombre de la clase con Impl
+  return IsarUserRepositoryImpl(isar);
 });
 
 final userSearchQueryProvider = StateProvider<String>((ref) => '');
@@ -23,7 +24,7 @@ final userListProvider = FutureProvider<List<UserEntity>>((ref) async {
   );
 });
 
-// NUEVO: Provider para observar un único usuario por su ID
+// Provider para observar un único usuario por su ID
 final userByIdProvider = FutureProvider.family.autoDispose<UserEntity?, int>((ref, id) async {
   final repository = ref.watch(userRepositoryProvider);
   final result = await repository.getUserById(id);

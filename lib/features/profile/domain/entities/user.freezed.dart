@@ -22,8 +22,13 @@ UserEntity _$UserEntityFromJson(Map<String, dynamic> json) {
 mixin _$UserEntity {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String get email => throw _privateConstructorUsedError;
   String get phone => throw _privateConstructorUsedError;
-  UserRole get role => throw _privateConstructorUsedError;
+  @JsonKey(name: 'active_role')
+  String get activeRole => throw _privateConstructorUsedError;
+  Map<String, bool> get roles => throw _privateConstructorUsedError;
+  @JsonKey(name: 'driver_profile')
+  DriverProfileEntity? get driverProfile => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
 
@@ -42,9 +47,14 @@ abstract class $UserEntityCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
+      String email,
       String phone,
-      UserRole role,
+      @JsonKey(name: 'active_role') String activeRole,
+      Map<String, bool> roles,
+      @JsonKey(name: 'driver_profile') DriverProfileEntity? driverProfile,
       @JsonKey(name: 'created_at') DateTime createdAt});
+
+  $DriverProfileEntityCopyWith<$Res>? get driverProfile;
 }
 
 /// @nodoc
@@ -62,8 +72,11 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
   $Res call({
     Object? id = null,
     Object? name = null,
+    Object? email = null,
     Object? phone = null,
-    Object? role = null,
+    Object? activeRole = null,
+    Object? roles = null,
+    Object? driverProfile = freezed,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
@@ -75,19 +88,43 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
       phone: null == phone
           ? _value.phone
           : phone // ignore: cast_nullable_to_non_nullable
               as String,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as UserRole,
+      activeRole: null == activeRole
+          ? _value.activeRole
+          : activeRole // ignore: cast_nullable_to_non_nullable
+              as String,
+      roles: null == roles
+          ? _value.roles
+          : roles // ignore: cast_nullable_to_non_nullable
+              as Map<String, bool>,
+      driverProfile: freezed == driverProfile
+          ? _value.driverProfile
+          : driverProfile // ignore: cast_nullable_to_non_nullable
+              as DriverProfileEntity?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $DriverProfileEntityCopyWith<$Res>? get driverProfile {
+    if (_value.driverProfile == null) {
+      return null;
+    }
+
+    return $DriverProfileEntityCopyWith<$Res>(_value.driverProfile!, (value) {
+      return _then(_value.copyWith(driverProfile: value) as $Val);
+    });
   }
 }
 
@@ -102,9 +139,15 @@ abstract class _$$UserEntityImplCopyWith<$Res>
   $Res call(
       {String id,
       String name,
+      String email,
       String phone,
-      UserRole role,
+      @JsonKey(name: 'active_role') String activeRole,
+      Map<String, bool> roles,
+      @JsonKey(name: 'driver_profile') DriverProfileEntity? driverProfile,
       @JsonKey(name: 'created_at') DateTime createdAt});
+
+  @override
+  $DriverProfileEntityCopyWith<$Res>? get driverProfile;
 }
 
 /// @nodoc
@@ -120,8 +163,11 @@ class __$$UserEntityImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
+    Object? email = null,
     Object? phone = null,
-    Object? role = null,
+    Object? activeRole = null,
+    Object? roles = null,
+    Object? driverProfile = freezed,
     Object? createdAt = null,
   }) {
     return _then(_$UserEntityImpl(
@@ -133,14 +179,26 @@ class __$$UserEntityImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
       phone: null == phone
           ? _value.phone
           : phone // ignore: cast_nullable_to_non_nullable
               as String,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as UserRole,
+      activeRole: null == activeRole
+          ? _value.activeRole
+          : activeRole // ignore: cast_nullable_to_non_nullable
+              as String,
+      roles: null == roles
+          ? _value._roles
+          : roles // ignore: cast_nullable_to_non_nullable
+              as Map<String, bool>,
+      driverProfile: freezed == driverProfile
+          ? _value.driverProfile
+          : driverProfile // ignore: cast_nullable_to_non_nullable
+              as DriverProfileEntity?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -151,13 +209,18 @@ class __$$UserEntityImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$UserEntityImpl implements _UserEntity {
+class _$UserEntityImpl extends _UserEntity {
   const _$UserEntityImpl(
       {required this.id,
       required this.name,
+      required this.email,
       required this.phone,
-      required this.role,
-      @JsonKey(name: 'created_at') required this.createdAt});
+      @JsonKey(name: 'active_role') required this.activeRole,
+      required final Map<String, bool> roles,
+      @JsonKey(name: 'driver_profile') this.driverProfile,
+      @JsonKey(name: 'created_at') required this.createdAt})
+      : _roles = roles,
+        super._();
 
   factory _$UserEntityImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserEntityImplFromJson(json);
@@ -167,16 +230,30 @@ class _$UserEntityImpl implements _UserEntity {
   @override
   final String name;
   @override
+  final String email;
+  @override
   final String phone;
   @override
-  final UserRole role;
+  @JsonKey(name: 'active_role')
+  final String activeRole;
+  final Map<String, bool> _roles;
+  @override
+  Map<String, bool> get roles {
+    if (_roles is EqualUnmodifiableMapView) return _roles;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_roles);
+  }
+
+  @override
+  @JsonKey(name: 'driver_profile')
+  final DriverProfileEntity? driverProfile;
   @override
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'UserEntity(id: $id, name: $name, phone: $phone, role: $role, createdAt: $createdAt)';
+    return 'UserEntity(id: $id, name: $name, email: $email, phone: $phone, activeRole: $activeRole, roles: $roles, driverProfile: $driverProfile, createdAt: $createdAt)';
   }
 
   @override
@@ -186,16 +263,29 @@ class _$UserEntityImpl implements _UserEntity {
             other is _$UserEntityImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.email, email) || other.email == email) &&
             (identical(other.phone, phone) || other.phone == phone) &&
-            (identical(other.role, role) || other.role == role) &&
+            (identical(other.activeRole, activeRole) ||
+                other.activeRole == activeRole) &&
+            const DeepCollectionEquality().equals(other._roles, _roles) &&
+            (identical(other.driverProfile, driverProfile) ||
+                other.driverProfile == driverProfile) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, phone, role, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      email,
+      phone,
+      activeRole,
+      const DeepCollectionEquality().hash(_roles),
+      driverProfile,
+      createdAt);
 
   @JsonKey(ignore: true)
   @override
@@ -211,14 +301,18 @@ class _$UserEntityImpl implements _UserEntity {
   }
 }
 
-abstract class _UserEntity implements UserEntity {
+abstract class _UserEntity extends UserEntity {
   const factory _UserEntity(
-          {required final String id,
-          required final String name,
-          required final String phone,
-          required final UserRole role,
-          @JsonKey(name: 'created_at') required final DateTime createdAt}) =
-      _$UserEntityImpl;
+      {required final String id,
+      required final String name,
+      required final String email,
+      required final String phone,
+      @JsonKey(name: 'active_role') required final String activeRole,
+      required final Map<String, bool> roles,
+      @JsonKey(name: 'driver_profile') final DriverProfileEntity? driverProfile,
+      @JsonKey(name: 'created_at')
+      required final DateTime createdAt}) = _$UserEntityImpl;
+  const _UserEntity._() : super._();
 
   factory _UserEntity.fromJson(Map<String, dynamic> json) =
       _$UserEntityImpl.fromJson;
@@ -228,9 +322,17 @@ abstract class _UserEntity implements UserEntity {
   @override
   String get name;
   @override
+  String get email;
+  @override
   String get phone;
   @override
-  UserRole get role;
+  @JsonKey(name: 'active_role')
+  String get activeRole;
+  @override
+  Map<String, bool> get roles;
+  @override
+  @JsonKey(name: 'driver_profile')
+  DriverProfileEntity? get driverProfile;
   @override
   @JsonKey(name: 'created_at')
   DateTime get createdAt;

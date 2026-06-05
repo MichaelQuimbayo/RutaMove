@@ -17,28 +17,49 @@ const UserModelSchema = CollectionSchema(
   name: r'UserModel',
   id: 7195426469378571114,
   properties: {
-    r'birthDate': PropertySchema(
+    r'activeRole': PropertySchema(
       id: 0,
-      name: r'birthDate',
+      name: r'activeRole',
+      type: IsarType.string,
+    ),
+    r'createdAt': PropertySchema(
+      id: 1,
+      name: r'createdAt',
       type: IsarType.dateTime,
     ),
+    r'driverProfile': PropertySchema(
+      id: 2,
+      name: r'driverProfile',
+      type: IsarType.object,
+      target: r'DriverProfileModel',
+    ),
     r'email': PropertySchema(
-      id: 1,
+      id: 3,
       name: r'email',
       type: IsarType.string,
     ),
-    r'firstName': PropertySchema(
-      id: 2,
-      name: r'firstName',
+    r'id': PropertySchema(
+      id: 4,
+      name: r'id',
       type: IsarType.string,
     ),
-    r'lastName': PropertySchema(
-      id: 3,
-      name: r'lastName',
+    r'isDriverRole': PropertySchema(
+      id: 5,
+      name: r'isDriverRole',
+      type: IsarType.bool,
+    ),
+    r'isPassengerRole': PropertySchema(
+      id: 6,
+      name: r'isPassengerRole',
+      type: IsarType.bool,
+    ),
+    r'name': PropertySchema(
+      id: 7,
+      name: r'name',
       type: IsarType.string,
     ),
     r'phone': PropertySchema(
-      id: 4,
+      id: 8,
       name: r'phone',
       type: IsarType.string,
     )
@@ -47,17 +68,24 @@ const UserModelSchema = CollectionSchema(
   serialize: _userModelSerialize,
   deserialize: _userModelDeserialize,
   deserializeProp: _userModelDeserializeProp,
-  idName: r'id',
-  indexes: {},
-  links: {
-    r'addresses': LinkSchema(
-      id: 7299628018160379247,
-      name: r'addresses',
-      target: r'AddressModel',
-      single: false,
+  idName: r'isarId',
+  indexes: {
+    r'id': IndexSchema(
+      id: -3268401673993471357,
+      name: r'id',
+      unique: true,
+      replace: true,
+      properties: [
+        IndexPropertySchema(
+          name: r'id',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
     )
   },
-  embeddedSchemas: {},
+  links: {},
+  embeddedSchemas: {r'DriverProfileModel': DriverProfileModelSchema},
   getId: _userModelGetId,
   getLinks: _userModelGetLinks,
   attach: _userModelAttach,
@@ -70,9 +98,18 @@ int _userModelEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.activeRole.length * 3;
+  {
+    final value = object.driverProfile;
+    if (value != null) {
+      bytesCount += 3 +
+          DriverProfileModelSchema.estimateSize(
+              value, allOffsets[DriverProfileModel]!, allOffsets);
+    }
+  }
   bytesCount += 3 + object.email.length * 3;
-  bytesCount += 3 + object.firstName.length * 3;
-  bytesCount += 3 + object.lastName.length * 3;
+  bytesCount += 3 + object.id.length * 3;
+  bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.phone.length * 3;
   return bytesCount;
 }
@@ -83,11 +120,20 @@ void _userModelSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.birthDate);
-  writer.writeString(offsets[1], object.email);
-  writer.writeString(offsets[2], object.firstName);
-  writer.writeString(offsets[3], object.lastName);
-  writer.writeString(offsets[4], object.phone);
+  writer.writeString(offsets[0], object.activeRole);
+  writer.writeDateTime(offsets[1], object.createdAt);
+  writer.writeObject<DriverProfileModel>(
+    offsets[2],
+    allOffsets,
+    DriverProfileModelSchema.serialize,
+    object.driverProfile,
+  );
+  writer.writeString(offsets[3], object.email);
+  writer.writeString(offsets[4], object.id);
+  writer.writeBool(offsets[5], object.isDriverRole);
+  writer.writeBool(offsets[6], object.isPassengerRole);
+  writer.writeString(offsets[7], object.name);
+  writer.writeString(offsets[8], object.phone);
 }
 
 UserModel _userModelDeserialize(
@@ -97,12 +143,20 @@ UserModel _userModelDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = UserModel();
-  object.birthDate = reader.readDateTime(offsets[0]);
-  object.email = reader.readString(offsets[1]);
-  object.firstName = reader.readString(offsets[2]);
-  object.id = id;
-  object.lastName = reader.readString(offsets[3]);
-  object.phone = reader.readString(offsets[4]);
+  object.activeRole = reader.readString(offsets[0]);
+  object.createdAt = reader.readDateTime(offsets[1]);
+  object.driverProfile = reader.readObjectOrNull<DriverProfileModel>(
+    offsets[2],
+    DriverProfileModelSchema.deserialize,
+    allOffsets,
+  );
+  object.email = reader.readString(offsets[3]);
+  object.id = reader.readString(offsets[4]);
+  object.isDriverRole = reader.readBool(offsets[5]);
+  object.isPassengerRole = reader.readBool(offsets[6]);
+  object.isarId = id;
+  object.name = reader.readString(offsets[7]);
+  object.phone = reader.readString(offsets[8]);
   return object;
 }
 
@@ -114,14 +168,26 @@ P _userModelDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readObjectOrNull<DriverProfileModel>(
+        offset,
+        DriverProfileModelSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readBool(offset)) as P;
+    case 6:
+      return (reader.readBool(offset)) as P;
+    case 7:
+      return (reader.readString(offset)) as P;
+    case 8:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -129,22 +195,74 @@ P _userModelDeserializeProp<P>(
 }
 
 Id _userModelGetId(UserModel object) {
-  return object.id;
+  return object.isarId ?? Isar.autoIncrement;
 }
 
 List<IsarLinkBase<dynamic>> _userModelGetLinks(UserModel object) {
-  return [object.addresses];
+  return [];
 }
 
 void _userModelAttach(IsarCollection<dynamic> col, Id id, UserModel object) {
-  object.id = id;
-  object.addresses
-      .attach(col, col.isar.collection<AddressModel>(), r'addresses', id);
+  object.isarId = id;
+}
+
+extension UserModelByIndex on IsarCollection<UserModel> {
+  Future<UserModel?> getById(String id) {
+    return getByIndex(r'id', [id]);
+  }
+
+  UserModel? getByIdSync(String id) {
+    return getByIndexSync(r'id', [id]);
+  }
+
+  Future<bool> deleteById(String id) {
+    return deleteByIndex(r'id', [id]);
+  }
+
+  bool deleteByIdSync(String id) {
+    return deleteByIndexSync(r'id', [id]);
+  }
+
+  Future<List<UserModel?>> getAllById(List<String> idValues) {
+    final values = idValues.map((e) => [e]).toList();
+    return getAllByIndex(r'id', values);
+  }
+
+  List<UserModel?> getAllByIdSync(List<String> idValues) {
+    final values = idValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'id', values);
+  }
+
+  Future<int> deleteAllById(List<String> idValues) {
+    final values = idValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'id', values);
+  }
+
+  int deleteAllByIdSync(List<String> idValues) {
+    final values = idValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'id', values);
+  }
+
+  Future<Id> putById(UserModel object) {
+    return putByIndex(r'id', object);
+  }
+
+  Id putByIdSync(UserModel object, {bool saveLinks = true}) {
+    return putByIndexSync(r'id', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllById(List<UserModel> objects) {
+    return putAllByIndex(r'id', objects);
+  }
+
+  List<Id> putAllByIdSync(List<UserModel> objects, {bool saveLinks = true}) {
+    return putAllByIndexSync(r'id', objects, saveLinks: saveLinks);
+  }
 }
 
 extension UserModelQueryWhereSort
     on QueryBuilder<UserModel, UserModel, QWhere> {
-  QueryBuilder<UserModel, UserModel, QAfterWhere> anyId() {
+  QueryBuilder<UserModel, UserModel, QAfterWhere> anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
@@ -153,112 +271,294 @@ extension UserModelQueryWhereSort
 
 extension UserModelQueryWhere
     on QueryBuilder<UserModel, UserModel, QWhereClause> {
-  QueryBuilder<UserModel, UserModel, QAfterWhereClause> idEqualTo(Id id) {
+  QueryBuilder<UserModel, UserModel, QAfterWhereClause> isarIdEqualTo(
+      Id isarId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
+        lower: isarId,
+        upper: isarId,
       ));
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<UserModel, UserModel, QAfterWhereClause> isarIdNotEqualTo(
+      Id isarId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
+              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
             )
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
+              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
             );
       } else {
         return query
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
+              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
             )
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
+              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
             );
       }
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<UserModel, UserModel, QAfterWhereClause> isarIdGreaterThan(
+      Id isarId,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
+        IdWhereClause.greaterThan(lower: isarId, includeLower: include),
       );
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<UserModel, UserModel, QAfterWhereClause> isarIdLessThan(
+      Id isarId,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
+        IdWhereClause.lessThan(upper: isarId, includeUpper: include),
       );
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
+  QueryBuilder<UserModel, UserModel, QAfterWhereClause> isarIdBetween(
+    Id lowerIsarId,
+    Id upperIsarId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
+        lower: lowerIsarId,
         includeLower: includeLower,
-        upper: upperId,
+        upper: upperIsarId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterWhereClause> idEqualTo(String id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'id',
+        value: [id],
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterWhereClause> idNotEqualTo(
+      String id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'id',
+              lower: [],
+              upper: [id],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'id',
+              lower: [id],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'id',
+              lower: [id],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'id',
+              lower: [],
+              upper: [id],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }
 
 extension UserModelQueryFilter
     on QueryBuilder<UserModel, UserModel, QFilterCondition> {
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> birthDateEqualTo(
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> activeRoleEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'activeRole',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      activeRoleGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'activeRole',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> activeRoleLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'activeRole',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> activeRoleBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'activeRole',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      activeRoleStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'activeRole',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> activeRoleEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'activeRole',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> activeRoleContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'activeRole',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> activeRoleMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'activeRole',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      activeRoleIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'activeRole',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      activeRoleIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'activeRole',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> createdAtEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'birthDate',
+        property: r'createdAt',
         value: value,
       ));
     });
   }
 
   QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
-      birthDateGreaterThan(
+      createdAtGreaterThan(
     DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'birthDate',
+        property: r'createdAt',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> birthDateLessThan(
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> createdAtLessThan(
     DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'birthDate',
+        property: r'createdAt',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> birthDateBetween(
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -266,11 +566,29 @@ extension UserModelQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'birthDate',
+        property: r'createdAt',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      driverProfileIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'driverProfile',
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      driverProfileIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'driverProfile',
       ));
     });
   }
@@ -405,235 +723,50 @@ extension UserModelQueryFilter
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> firstNameEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'firstName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
-      firstNameGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'firstName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> firstNameLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'firstName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> firstNameBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'firstName',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> firstNameStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'firstName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> firstNameEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'firstName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> firstNameContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'firstName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> firstNameMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'firstName',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> firstNameIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'firstName',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
-      firstNameIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'firstName',
-        value: '',
-      ));
-    });
-  }
-
   QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idEqualTo(
-      Id value) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idGreaterThan(
-    Id value, {
+    String value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idLessThan(
-    Id value, {
+    String value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> lastNameEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'lastName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> lastNameGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'lastName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> lastNameLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'lastName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> lastNameBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -642,7 +775,7 @@ extension UserModelQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'lastName',
+        property: r'id',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -652,70 +785,288 @@ extension UserModelQueryFilter
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> lastNameStartsWith(
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'lastName',
+        property: r'id',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> lastNameEndsWith(
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'lastName',
+        property: r'id',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> lastNameContains(
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'lastName',
+        property: r'id',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> lastNameMatches(
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'lastName',
+        property: r'id',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> lastNameIsEmpty() {
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'lastName',
+        property: r'id',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
-      lastNameIsNotEmpty() {
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> idIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'lastName',
+        property: r'id',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> isDriverRoleEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isDriverRole',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      isPassengerRoleEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isPassengerRole',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> isarIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'isarId',
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> isarIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'isarId',
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> isarIdEqualTo(
+      Id? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> isarIdGreaterThan(
+    Id? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> isarIdLessThan(
+    Id? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> isarIdBetween(
+    Id? lower,
+    Id? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'isarId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'name',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'name',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'name',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> nameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'name',
         value: '',
       ));
     });
@@ -853,81 +1204,40 @@ extension UserModelQueryFilter
 }
 
 extension UserModelQueryObject
-    on QueryBuilder<UserModel, UserModel, QFilterCondition> {}
-
-extension UserModelQueryLinks
     on QueryBuilder<UserModel, UserModel, QFilterCondition> {
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> addresses(
-      FilterQuery<AddressModel> q) {
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> driverProfile(
+      FilterQuery<DriverProfileModel> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'addresses');
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
-      addressesLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'addresses', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> addressesIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'addresses', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
-      addressesIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'addresses', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
-      addressesLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'addresses', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
-      addressesLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'addresses', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
-      addressesLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'addresses', lower, includeLower, upper, includeUpper);
+      return query.object(q, r'driverProfile');
     });
   }
 }
 
+extension UserModelQueryLinks
+    on QueryBuilder<UserModel, UserModel, QFilterCondition> {}
+
 extension UserModelQuerySortBy on QueryBuilder<UserModel, UserModel, QSortBy> {
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByBirthDate() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByActiveRole() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'birthDate', Sort.asc);
+      return query.addSortBy(r'activeRole', Sort.asc);
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByBirthDateDesc() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByActiveRoleDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'birthDate', Sort.desc);
+      return query.addSortBy(r'activeRole', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
@@ -943,27 +1253,51 @@ extension UserModelQuerySortBy on QueryBuilder<UserModel, UserModel, QSortBy> {
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByFirstName() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortById() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'firstName', Sort.asc);
+      return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByFirstNameDesc() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'firstName', Sort.desc);
+      return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByLastName() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByIsDriverRole() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastName', Sort.asc);
+      return query.addSortBy(r'isDriverRole', Sort.asc);
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByLastNameDesc() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByIsDriverRoleDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastName', Sort.desc);
+      return query.addSortBy(r'isDriverRole', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByIsPassengerRole() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPassengerRole', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByIsPassengerRoleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPassengerRole', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
     });
   }
 
@@ -982,15 +1316,27 @@ extension UserModelQuerySortBy on QueryBuilder<UserModel, UserModel, QSortBy> {
 
 extension UserModelQuerySortThenBy
     on QueryBuilder<UserModel, UserModel, QSortThenBy> {
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByBirthDate() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByActiveRole() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'birthDate', Sort.asc);
+      return query.addSortBy(r'activeRole', Sort.asc);
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByBirthDateDesc() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByActiveRoleDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'birthDate', Sort.desc);
+      return query.addSortBy(r'activeRole', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
@@ -1006,18 +1352,6 @@ extension UserModelQuerySortThenBy
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByFirstName() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'firstName', Sort.asc);
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByFirstNameDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'firstName', Sort.desc);
-    });
-  }
-
   QueryBuilder<UserModel, UserModel, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1030,15 +1364,51 @@ extension UserModelQuerySortThenBy
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByLastName() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByIsDriverRole() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastName', Sort.asc);
+      return query.addSortBy(r'isDriverRole', Sort.asc);
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByLastNameDesc() {
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByIsDriverRoleDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastName', Sort.desc);
+      return query.addSortBy(r'isDriverRole', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByIsPassengerRole() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPassengerRole', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByIsPassengerRoleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPassengerRole', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByIsarId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isarId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByIsarIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isarId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
     });
   }
 
@@ -1057,9 +1427,16 @@ extension UserModelQuerySortThenBy
 
 extension UserModelQueryWhereDistinct
     on QueryBuilder<UserModel, UserModel, QDistinct> {
-  QueryBuilder<UserModel, UserModel, QDistinct> distinctByBirthDate() {
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctByActiveRole(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'birthDate');
+      return query.addDistinctBy(r'activeRole', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'createdAt');
     });
   }
 
@@ -1070,17 +1447,29 @@ extension UserModelQueryWhereDistinct
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QDistinct> distinctByFirstName(
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctById(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'firstName', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'id', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QDistinct> distinctByLastName(
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctByIsDriverRole() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isDriverRole');
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctByIsPassengerRole() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isPassengerRole');
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'lastName', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
     });
   }
 
@@ -1094,15 +1483,28 @@ extension UserModelQueryWhereDistinct
 
 extension UserModelQueryProperty
     on QueryBuilder<UserModel, UserModel, QQueryProperty> {
-  QueryBuilder<UserModel, int, QQueryOperations> idProperty() {
+  QueryBuilder<UserModel, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
+      return query.addPropertyName(r'isarId');
     });
   }
 
-  QueryBuilder<UserModel, DateTime, QQueryOperations> birthDateProperty() {
+  QueryBuilder<UserModel, String, QQueryOperations> activeRoleProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'birthDate');
+      return query.addPropertyName(r'activeRole');
+    });
+  }
+
+  QueryBuilder<UserModel, DateTime, QQueryOperations> createdAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'createdAt');
+    });
+  }
+
+  QueryBuilder<UserModel, DriverProfileModel?, QQueryOperations>
+      driverProfileProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'driverProfile');
     });
   }
 
@@ -1112,15 +1514,27 @@ extension UserModelQueryProperty
     });
   }
 
-  QueryBuilder<UserModel, String, QQueryOperations> firstNameProperty() {
+  QueryBuilder<UserModel, String, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'firstName');
+      return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<UserModel, String, QQueryOperations> lastNameProperty() {
+  QueryBuilder<UserModel, bool, QQueryOperations> isDriverRoleProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'lastName');
+      return query.addPropertyName(r'isDriverRole');
+    });
+  }
+
+  QueryBuilder<UserModel, bool, QQueryOperations> isPassengerRoleProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isPassengerRole');
+    });
+  }
+
+  QueryBuilder<UserModel, String, QQueryOperations> nameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'name');
     });
   }
 
