@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:RutaMove/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:RutaMove/features/auth/data/services/firestore_user_service.dart';
-import 'package:RutaMove/features/auth/domain/entities/authenticated_user.dart';
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
 class MockUserCredential extends Mock implements UserCredential {}
