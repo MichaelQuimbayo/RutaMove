@@ -39,7 +39,7 @@ final authRepositoryProvider = AutoDisposeProvider<AuthRepository>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef AuthRepositoryRef = Ref<AuthRepository>;
+typedef AuthRepositoryRef = AutoDisposeProviderRef<AuthRepository>;
 String _$signUpUseCaseHash() => r'4201daf5f96493848da629b32fddadef84544cd7';
 
 /// --- Capa de Dominio (Casos de Uso) ---
@@ -56,7 +56,7 @@ final signUpUseCaseProvider = AutoDisposeProvider<SignUpUseCase>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef SignUpUseCaseRef = Ref<SignUpUseCase>;
+typedef SignUpUseCaseRef = AutoDisposeProviderRef<SignUpUseCase>;
 String _$signInUseCaseHash() => r'd8c4ca8799d3c785d724fcb12259fb8cb5c6f7aa';
 
 /// See also [signInUseCase].
@@ -71,7 +71,7 @@ final signInUseCaseProvider = AutoDisposeProvider<SignInUseCase>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef SignInUseCaseRef = Ref<SignInUseCase>;
+typedef SignInUseCaseRef = AutoDisposeProviderRef<SignInUseCase>;
 String _$signUpControllerHash() => r'04cd2d82cfe738a40bbac77d642e2ebf947bf6f6';
 
 /// --- Capa de Presentación (Controladores) ---
